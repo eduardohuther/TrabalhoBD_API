@@ -1,11 +1,21 @@
 'use strict'
 
+const Database = use('Database')
+
 class ProdutoController {
 
-    async cadastrar({request}){
-        const data = request.only(['nome', 'valor', 'cod_fornecedor'])
-        await Database
-            .raw('INSERT INTO produtos (nome, valor, cod_fornecedor) VALUES (?, ?, ?)', [data.pago, data.data, data.valor_total, data.cod_cliente])
+    async cadastrar({request, auth}){
+        const user = await Database
+            .raw('SELECT * FROM usuarios WHERE token = ?', [auth.getAuthHeader()])
+            const toObject = JSON.parse(JSON.stringify(user))
+            if(toObject[0].length == 1){
+                const data = request.only(['nome', 'valor', 'cod_fornecedor'])
+            await Database
+            .raw('INSERT INTO produtos (nome, valor, cod_fornecedor) VALUES (?, ?, ?)', [data.nome, data.valor, data.cod_fornecedor])
+                return 200
+            
+            }
+        
         return 200
     }
 
@@ -18,8 +28,11 @@ class ProdutoController {
 
     async getTodos({params}){
         const produtos = await Database
-            .raw('SELECT * FROM produtos ORDER BY id DESC LIMIT 10 OFFSET ?', [params.id])
-        return produtos
+            .raw('SELECT p.*, f.nome as nome_fornecedor FROM produtos AS p JOIN fornecedores AS f ON p.cod_fornecedor = f.id ORDER BY f.id DESC')
+            return {
+                status: 200,
+                produtos: JSON.parse(JSON.stringify(produtos))[0],
+            } 
     }
 
     async search({params}){

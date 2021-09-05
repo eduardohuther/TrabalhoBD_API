@@ -4,17 +4,33 @@ const Database = use('Database')
 
 class FornecedorController {
 
-    async cadastrar({request}){
-        const data = request.only(['cpf', 'nome', 'telefone', 'usuario', 'senha'])
-            await Database
+    async cadastrar({request, auth}){
+        const user = await Database
+            .raw('SELECT * FROM usuarios WHERE token = ?', [auth.getAuthHeader()])
+            const toObject = JSON.parse(JSON.stringify(user))
+            if(toObject[0].length == 1){
+                const data = request.only(['cpf', 'nome', 'telefone'])
+                const cliente = await Database
+            .raw('SELECT * FROM fornecedores WHERE cpf = ?', [data.cpf])
+            const toObjectFornc = JSON.parse(JSON.stringify(cliente))
+            if(toObjectFornc[0].length == 0){
+                await Database
             .raw('INSERT INTO fornecedores (cpf, nome, telefone) VALUES (?, ?, ?)', [data.cpf, data.nome, data.telefone])
-        return 200
+                return 200
+            } else {
+                return 201
+            }
+            
+            }
     }
 
     async getTodos({params}){
         const fornecedores = await Database
-            .raw('SELECT * FROM fornecedores ORDER BY DESC ASC LIMIT 10 OFFSET ?', [params.id])
-        return fornecedores
+            .raw('SELECT f.*, COUNT(p.id) as produtos FROM fornecedores AS f JOIN produtos AS p ON p.cod_fornecedor = f.id GROUP BY f.id ORDER BY f.id DESC')
+            return {
+                status: 200,
+                fornecedores: JSON.parse(JSON.stringify(fornecedores))[0],
+            }
     }
 
     async search({params}){

@@ -4,6 +4,7 @@
 const Route = use("Route");
 
 Route.get("/usuario-login/:cpf/:senha", "UsuarioController.login");
+Route.get("/get-cadastros/:token", "UsuarioController.getCadastros");
 
 Route.post("/fornecedor-cadastro", "FornecedorController.cadastrar");
 Route.get("/todos-fornecedor/:id", "FornecedorController.getTodos");
@@ -16,8 +17,8 @@ Route.get("/cliente/:search", "ClienteController.search");
 Route.post("/cliente-editar", "ClienteController.editar");
 
 Route.post("/venda-cadastro", "VendaController.cadastrar");
-Route.get("/todas-venda/:id", "VendaController.getTodos");
-Route.get("/venda/:search", "VendaController.getVenda");
+Route.get("/todas-venda/:token", "VendaController.getTodos");
+Route.get("/venda/:id", "VendaController.getVenda");
 
 Route.post("/produto-cadastro", "ProdutoController.cadastrar");
 Route.get("/todos-produto/:id", "ProdutoController.getTodos");
