@@ -26,7 +26,7 @@ class FornecedorController {
 
     async getTodos({params}){
         const fornecedores = await Database
-            .raw('SELECT f.*, COUNT(p.id) as produtos FROM fornecedores AS f JOIN produtos AS p ON p.cod_fornecedor = f.id GROUP BY f.id ORDER BY f.id DESC')
+            .raw('SELECT * FROM ORDER BY f.id DESC')
             return {
                 status: 200,
                 fornecedores: JSON.parse(JSON.stringify(fornecedores))[0],
