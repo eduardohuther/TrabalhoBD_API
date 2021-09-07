@@ -56,7 +56,6 @@ class VendaController {
     }
 
     async getVenda({params}){
-        console.log(params.id)
         const parcelas = await Database
             .raw('SELECT * FROM parcela WHERE cod_venda = ?', [params.id])
             console.log('a')
@@ -64,8 +63,24 @@ class VendaController {
         .raw('SELECT v.*, p.nome, p.id FROM venda_produto AS v JOIN produtos AS p ON p.id = v.cod_produto WHERE v.cod_venda = ?', [params.id])
         return {
             status: 200,
-            parcelas: parcelas,
-            produtos: produtos
+            parcelas: JSON.parse(JSON.stringify(parcelas))[0],
+            produtos: JSON.parse(JSON.stringify(produtos))[0]
+        }
+    }
+
+    async pagaParcela({params}){
+        await Database
+            .raw('UPDATE parcela SET pago = 1, data_pagamento = ? WHERE id = ?', [moment().format('YYYY-MM-DD'),params.id])
+        return {
+            status: 200
+        }
+    }
+
+    async delete({params}){
+        await Database
+            .raw('DELETE FROM vendas WHERE id = ?', [params.id])
+        return {
+            status: 200
         }
     }
 

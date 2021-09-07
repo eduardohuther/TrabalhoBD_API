@@ -46,6 +46,14 @@ class FornecedorController {
         return 200
     }
 
+    async delete({params}){
+        await Database
+            .raw('DELETE FROM fornecedores WHERE id = ?', [params.id])
+        return {
+            status: 200
+        }
+    }
+
 }
 
 module.exports = FornecedorController

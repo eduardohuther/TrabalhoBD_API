@@ -46,6 +46,24 @@ class ClienteController {
             .raw('UPDATE clientes SET cpf = ?, nome = ?, telefone = ? WHERE id = ?', [data.cpf, data.nome, data.telefone, data.id])
         return 200
     }
+
+    async delete({params}){
+        await Database
+            .raw('DELETE FROM clientes WHERE id = ?', [params.id])
+        return {
+            status: 200
+        }
+    }
+
+    async devem({}){
+        const clientes = await Database
+            .raw('SELECT SUM(p.valor), c.nome, c.telefone, c.cpf FROM parcela AS p JOIN vendas AS v ON p.cod_venda = v.id JOIN clientes as c ON v.cod_cliente = c.id WHERE data_pagamento IS NULL && data_vencimento < NOW() GROUP BY v.id')
+        
+            return {
+            status: 200,
+            clientes: JSON.parse(JSON.stringify(clientes))[0]
+        }
+    }
 }
 
 module.exports = ClienteController

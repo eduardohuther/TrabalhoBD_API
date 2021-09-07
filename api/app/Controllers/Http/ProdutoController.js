@@ -41,6 +41,36 @@ class ProdutoController {
         return produtos
     }
 
+    async delete({params}){
+        await Database
+            .raw('DELETE FROM produtos WHERE id = ?', [params.id])
+        return {
+            status: 200
+        }
+    }
+
+    async maisVendidos({params}){
+        const produtos = await Database
+            .raw('SELECT SUM(v.valor_total), SUM(v.quantidade), p.nome FROM venda_produto AS v JOIN produtos AS p ON v.cod_produto = p.id JOIN vendas AS vd ON v.cod_venda = vd.id WHERE vd.data >= ? AND vd.data <= ?  GROUP BY p.id ORDER BY SUM(v.quantidade) DESC', 
+            [params.i, params.f])
+        
+            return {
+            status: 200,
+            produtos: JSON.parse(JSON.stringify(produtos))[0]
+        }
+    }
+
+    async maisLucrativos({params}){
+        const produtos = await Database
+            .raw('SELECT SUM(v.valor_total), SUM(v.quantidade), p.nome FROM venda_produto AS v JOIN produtos AS p ON v.cod_produto = p.id JOIN vendas AS vd ON v.cod_venda = vd.id WHERE vd.data >= ? AND vd.data <= ?  GROUP BY p.id ORDER BY SUM(v.valor_total) DESC', 
+            [params.i, params.f])
+        
+            return {
+            status: 200,
+            produtos: JSON.parse(JSON.stringify(produtos))[0]
+        }
+    }
+
 }
 
 module.exports = ProdutoController
