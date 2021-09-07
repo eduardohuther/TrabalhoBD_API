@@ -27,7 +27,7 @@ class ClienteController {
 
     async getTodos({params}){
         const clientes = await Database
-        .raw('SELECT c.*, COUNT(v.id) as compras FROM clientes AS c JOIN vendas AS v ON v.cod_cliente = c.id GROUP BY c.id ORDER BY c.id DESC')
+        .raw('SELECT c.*, COUNT(v.id) as compras FROM clientes AS c LEFT JOIN vendas AS v ON v.cod_cliente = c.id GROUP BY c.id ORDER BY c.id DESC')
         return {
             status: 200,
             clientes: JSON.parse(JSON.stringify(clientes))[0],
